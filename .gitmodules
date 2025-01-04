@@ -1,3 +1,6 @@
 [submodule "lib/batteries"]
 	path = lib/batteries
 	url = https://github.com/1bardesign/batteries.git
+[submodule "lib/anim8"]
+	path = lib/anim8
+	url = https://github.com/kikito/anim8.git
