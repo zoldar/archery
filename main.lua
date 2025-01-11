@@ -416,12 +416,14 @@ function love.draw()
 
     if game.state == "showing_final_score" then
       if game.player1.score > game.player2.score then
-        drawDialog(string.upper(game.player1.type) .. " WON", "center", 20)
+        drawDialog(string.upper(game.player1.type) .. " WON", "center", 13)
       elseif game.player1.score < game.player2.score then
-        drawDialog(string.upper(game.player2.type) .. " WON", "center", 20)
+        drawDialog(string.upper(game.player2.type) .. " WON", "center", 13)
       else
-        drawDialog("TIE!", "center", 20)
+        drawDialog("TIE!", "center", 13)
       end
+
+      drawDialog("SPACE TO TRY AGAIN", "center", 25)
     end
 
     -- crosshair
