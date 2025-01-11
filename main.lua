@@ -7,6 +7,7 @@ local push = require("lib/push/push")
 local b = require("lib/batteries")
 local d = require("lib/drawing")
 local Crosshair = require("crosshair")
+local CPUPlayer = require("cpu")
 
 lg.setDefaultFilter("nearest", "nearest")
 
@@ -59,6 +60,7 @@ local targets
 local game
 local crosshair
 local bus
+local cpu
 
 push:setupScreen(
   GAME_WIDTH, GAME_HEIGHT,
@@ -82,6 +84,7 @@ local function reset()
   game.state = "starting_game"
 
   crosshair = Crosshair:new(colors, GAME_WIDTH, GAME_HEIGHT)
+  cpu = CPUPlayer:new()
 end
 
 function love.load()
@@ -190,6 +193,7 @@ function love.update(dt)
 
   timer:update(dt)
 
+  cpu:update(dt, game, crosshair)
   crosshair:update(dt, time, bus)
 
   if game.state == "starting_round" and timer:expired() then
@@ -204,6 +208,8 @@ function love.update(dt)
       setWind()
       game.state = "aiming"
       crosshair:setTarget(targets[game.round])
+      local controlType = game[game.turn].type == "cpu" and "external" or "input"
+      crosshair:setControl(controlType)
       crosshair:spawn()
     end)
   end
