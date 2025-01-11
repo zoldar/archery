@@ -22,7 +22,15 @@ function Crosshair:new(colors, viewWidth, viewHeight)
     target = nil,
     speed = 0,
     jiggle = START_JIGGLE,
-    timer = AIM_TIME
+    timer = AIM_TIME,
+    controlMode = "input", -- input, external
+    controls = {
+      up = false,
+      down = false,
+      left = false,
+      right = false,
+      shoot = false
+    }
   }
   self.__index = self
   return setmetatable(state, self)
@@ -65,6 +73,44 @@ function Crosshair:setWind(wind)
   self.wind = wind
 end
 
+function Crosshair:setControl(mode)
+  self.controlMode = mode
+end
+
+function Crosshair:push(control)
+  self.controls[control] = true
+end
+
+function Crosshair:release(control)
+  self.controls[control] = false
+end
+
+function Crosshair:_pressed(control)
+  if self.controlMode == "external" then
+    return self.controls[control]
+  end
+
+  if control == "up" then
+    return lk.isDown("up") or lk.isDown("w")
+  end
+
+  if control == "down" then
+    return lk.isDown("down") or lk.isDown("s")
+  end
+
+  if control == "left" then
+    return lk.isDown("left") or lk.isDown("a")
+  end
+
+  if control == "right" then
+    return lk.isDown("right") or lk.isDown("d")
+  end
+
+  if control == "shoot" then
+    return lk.isDown("space") or lk.isDown("z")
+  end
+end
+
 function Crosshair:update(dt, time, bus)
   if not self.position or not self.target then
     return
@@ -76,23 +122,23 @@ function Crosshair:update(dt, time, bus)
 
   local direction = b.vec2()
 
-  if lk.isDown("up") or lk.isDown("w") then
+  if self:_pressed("up") then
     direction.y = direction.y - 1
   end
 
-  if lk.isDown("down") or lk.isDown("a") then
+  if self:_pressed("down") then
     direction.y = direction.y + 1
   end
 
-  if lk.isDown("left") or lk.isDown("s") then
+  if self:_pressed("left") then
     direction.x = direction.x - 1
   end
 
-  if lk.isDown("right") or lk.isDown("d") then
+  if self:_pressed("right") then
     direction.x = direction.x + 1
   end
 
-  if self.timer < 0 then
+  if self:_pressed("shoot") or self.timer < 0 then
     self:shoot(bus)
   end
 
@@ -127,7 +173,7 @@ function Crosshair:keypressed(bus, key)
     return
   end
 
-  if lk.isDown("z") or lk.isDown("space") then
+  if self:_pressed("shoot") then
     self:shoot(bus)
   end
 end
