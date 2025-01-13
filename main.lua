@@ -1,6 +1,5 @@
 local li = love.image
 local lg = love.graphics
-local lk = love.keyboard
 local lm = love.math
 local lw = love.window
 local push = require("lib/push/push")
@@ -34,11 +33,13 @@ NEW_GAME = {
   target = nil,
   player1 = {
     type = "player",
+    face = "front",
     score = 0,
     lastHit = 0
   },
   player2 = {
     type = "cpu",
+    face = "front",
     score = 0,
     lastHit = 0
   },
@@ -96,8 +97,20 @@ function love.load()
     ),
     title = lg.newImage("assets/title.png"),
     track = lg.newImage("assets/track.png"),
-    player = lg.newImage("assets/player.png"),
-    cpu = lg.newImage("assets/cpu.png"),
+    player_front = lg.newImage("assets/player-front.png"),
+    player_left = lg.newImage("assets/player-left.png"),
+    player_right = lg.newImage("assets/player-right.png"),
+    player_neutral = lg.newImage("assets/player-neutral.png"),
+    player_ooh = lg.newImage("assets/player-ooh.png"),
+    player_smile = lg.newImage("assets/player-smile.png"),
+    player_sad = lg.newImage("assets/player-sad.png"),
+    cpu_front = lg.newImage("assets/cpu-front.png"),
+    cpu_left = lg.newImage("assets/cpu-left.png"),
+    cpu_right = lg.newImage("assets/cpu-right.png"),
+    cpu_neutral = lg.newImage("assets/cpu-neutral.png"),
+    cpu_ooh = lg.newImage("assets/cpu-ooh.png"),
+    cpu_smile = lg.newImage("assets/cpu-smile.png"),
+    cpu_sad = lg.newImage("assets/cpu-sad.png"),
     arrow = lg.newImage("assets/arrow.png"),
     marker = lg.newImage("assets/marker.png"),
     target1_full = lg.newImage("assets/target1_full.png"),
@@ -178,7 +191,7 @@ end
 
 local function setWind()
   game.wind.angle = lm.random(360)
-  game.wind.strength = b.math.to_precision(lm.random(10, MAX_WIND) / 10, 1)
+  game.wind.strength = b.math.to_precision(lm.random(20, MAX_WIND) / 10, 1)
   local angle = math.rad(game.wind.angle)
   local windVector = b.vec2():polar(game.wind.strength, angle)
   crosshair:setWind(windVector)
@@ -353,7 +366,7 @@ function love.draw()
 
     -- state independent UI
     lg.setColor(1, 1, 1)
-    lg.draw(assets[game.player1.type], 1, 1)
+    lg.draw(assets[game.player1.type .. "_" .. game.player1.face], 1, 1)
     lg.setColor(colors.dark)
     lg.print(game.player1.score, 9, 1)
 
@@ -363,7 +376,7 @@ function love.draw()
     lg.setColor(colors.dark)
     lg.print(game.player2.score, 44, 1)
     lg.setColor(1, 1, 1)
-    lg.draw(assets[game.player2.type], 53, 1)
+    lg.draw(assets[game.player2.type .. "_" .. game.player2.face], 53, 1)
 
     lg.setColor(colors.dark)
     d.circle("line", 72, 8, 7)
