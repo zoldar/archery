@@ -1,6 +1,12 @@
 local _M = {}
 
 local lg = love.graphics
+local lm = love.math
+
+function _M.color(br, bg, bb)
+  local red, green, blue = lm.colorFromBytes(br, bg, bb)
+  return { red, green, blue }
+end
 
 function _M.line(x0, y0, x1, y1)
   local dx = math.abs(x1 - x0)

@@ -18,7 +18,7 @@ end
 function CPUPlayer:update(dt, game, crosshair)
   self.time = self.time + dt
 
-  if game.state == "aiming" and game[game.turn].type == "cpu" then
+  if game[game.turn].type == "cpu" and crosshair.target then
     self:_aimAndShoot(game, crosshair)
   else
     crosshair:release("left")
