@@ -149,7 +149,7 @@ local function setupTargets()
       }
     },
     {
-      position = b.vec2(51, 8),
+      position = b.vec2(53, 10),
       offset = b.vec2(1, 2),
       sprite = assets.target3_full,
       data = assets.target3_data,

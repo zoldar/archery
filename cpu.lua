@@ -7,7 +7,7 @@ function CPUPlayer:new()
     targetCenters = {
       b.vec2(39, 23),
       b.vec2(16, 17),
-      b.vec2(56, 14)
+      b.vec2(58, 16)
     },
     time = 0
   }
