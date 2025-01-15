@@ -7,6 +7,7 @@ local b = require("lib/batteries")
 local d = require("lib/drawing")
 local Crosshair = require("crosshair")
 local CPUPlayer = require("cpu")
+local Face = require("face")
 
 lg.setDefaultFilter("nearest", "nearest")
 
@@ -33,13 +34,13 @@ NEW_GAME = {
   target = nil,
   player1 = {
     type = "player",
-    face = "front",
+    face = nil,
     score = 0,
     lastHit = 0
   },
   player2 = {
     type = "cpu",
-    face = "front",
+    face = nil,
     score = 0,
     lastHit = 0
   },
@@ -183,8 +184,7 @@ local function drawScene()
   end
 
   -- state-machine independent UI
-  lg.setColor(1, 1, 1)
-  lg.draw(assets[game.player1.type .. "_" .. game.player1.face], 1, 1)
+  game.player1.face:draw()
   lg.setColor(COLORS.dark)
   lg.print(game.player1.score, 9, 1)
 
@@ -193,8 +193,7 @@ local function drawScene()
 
   lg.setColor(COLORS.dark)
   lg.print(game.player2.score, 44, 1)
-  lg.setColor(1, 1, 1)
-  lg.draw(assets[game.player2.type .. "_" .. game.player2.face], 53, 1)
+  game.player2.face:draw()
 
   lg.setColor(COLORS.dark)
   d.circle("line", 72, 8, 7)
@@ -357,6 +356,22 @@ machine:add_state("shooting", {
   enter = function()
     local nextState = "aiming"
 
+    -- set faces
+    local opponent = game.turn == "player1" and "player2" or "player1"
+    local shooterMood = "neutral"
+    local opponentMood = "idling"
+    if game[game.turn].lastHit >= 7 then
+      shooterMood = "smiling"
+      if game[game.turn].lastHit == 10 then
+        opponentMood = "surprised"
+      end
+    elseif game[game.turn].lastHit <= 2 then
+      shooterMood = "sad"
+    end
+
+    game[game.turn].face:set(shooterMood)
+    game[opponent].face:set(opponentMood)
+
     if game.arrows == 0 then
       if game.turn == "player2" then
         if game.round == ROUNDS then
@@ -404,6 +419,22 @@ machine:add_state("shooting", {
 })
 
 machine:add_state("showing_final_score", {
+  enter = function()
+    -- set faces
+    local player1Mood, player2Mood
+    if game.player1.score > game.player2.score then
+      player1Mood = "smiling"
+      player2Mood = "sad"
+    elseif game.player1.score < game.player2.score then
+      player1Mood = "sad"
+      player2Mood = "smiling"
+    else
+      player1Mood = "surprised"
+      player1Mood = "surprised"
+    end
+    game.player1.face:set(player1Mood)
+    game.player2.face:set(player2Mood)
+  end,
   draw = function()
     drawScene()
 
@@ -419,7 +450,6 @@ machine:add_state("showing_final_score", {
   end
 })
 
-
 local function reset(starting_state)
   time = 0
   timer = b.timer(nil, nil)
@@ -428,6 +458,8 @@ local function reset(starting_state)
 
   crosshair = Crosshair:new(COLORS, GAME_WIDTH, GAME_HEIGHT)
   cpu = CPUPlayer:new()
+  game.player1.face = Face:new(assets, "player1", game.player1.type)
+  game.player2.face = Face:new(assets, "player2", game.player2.type)
 end
 
 -- core gameloop
@@ -453,6 +485,8 @@ function love.update(dt)
   crosshair:update(dt, time, bus)
 
   machine:update(dt)
+  game.player1.face:update(dt)
+  game.player2.face:update(dt)
 end
 
 function love.keypressed(key)
