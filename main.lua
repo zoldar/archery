@@ -122,8 +122,13 @@ local function loadAssets()
     target2_data = li.newImageData("assets/target2.png"),
     target3_full = lg.newImage("assets/target3_full.png"),
     target3_data = li.newImageData("assets/target3.png"),
+    overture = love.audio.newSource("assets/overture.ogg", "static"),
+    hit1 = love.audio.newSource("assets/hit.ogg", "static"),
+    hit2 = love.audio.newSource("assets/hit2.ogg", "static"),
+    miss = love.audio.newSource("assets/miss.ogg", "static"),
   }
 
+  assets.overture:setLooping(true)
   lg.setFont(assets.font)
 end
 
@@ -261,6 +266,9 @@ end
 local machine = b.state_machine()
 
 machine:add_state("intro", {
+  enter = function()
+    assets.overture:play()
+  end,
   draw = function()
     lg.draw(assets.title, 2, 2)
     if (math.sin(math.pi * time * 3) > 0) then
@@ -273,6 +281,9 @@ machine:add_state("intro", {
 })
 
 machine:add_state("help", {
+  exit = function()
+    assets.overture:stop()
+  end,
   draw = function()
     lg.setColor(COLORS.dark)
     lg.print("* ARROWS OR WASD", 7, 3)
@@ -375,6 +386,16 @@ machine:add_state("shooting", {
 
     game[game.turn].face:set(shooterMood)
     game[opponent].face:set(opponentMood)
+
+    -- hit sound
+    if game[game.turn].lastHit == 10 then
+      assets.hit2:play()
+    elseif game[game.turn].lastHit >= 3 then
+      assets.hit1:play()
+    else
+      assets.miss:play()
+    end
+
 
     if game.arrows == 0 then
       if game.turn == "player2" then
