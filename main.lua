@@ -263,10 +263,12 @@ local machine = b.state_machine()
 machine:add_state("intro", {
   draw = function()
     lg.draw(assets.title, 2, 2)
-    local text = "PRESS SPACE"
-    local textWidth = assets.font:getWidth(text)
-    lg.setColor(COLORS.dark)
-    lg.print(text, 40 - textWidth / 2, 35)
+    if (math.sin(math.pi * time * 3) > 0) then
+      local text = "PRESS SPACE"
+      local textWidth = assets.font:getWidth(text)
+      lg.setColor(COLORS.dark)
+      lg.print(text, 40 - textWidth / 2, 35)
+    end
   end
 })
 
@@ -279,10 +281,12 @@ machine:add_state("help", {
     lg.print("* P TO PAUSE", 7, 3 + 3 * 7)
     lg.print("* MIND THE WIND!", 7, 3 + 4 * 7)
 
-    local text = "PRESS SPACE"
-    local textWidth = assets.font:getWidth(text)
-    lg.setColor(COLORS.dark)
-    lg.print(text, 40 - textWidth / 2, 40)
+    if (math.sin(math.pi * time * 3) > 0) then
+      local text = "PRESS SPACE"
+      local textWidth = assets.font:getWidth(text)
+      lg.setColor(COLORS.dark)
+      lg.print(text, 40 - textWidth / 2, 40)
+    end
   end
 })
 
