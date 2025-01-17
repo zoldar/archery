@@ -5,9 +5,10 @@ local b = require("lib/batteries")
 local push = require("lib/push/push")
 
 START_JIGGLE = 2
-AIM_TIME = 15
-MAX_SPEED = 30
-ACCELERATION = 30
+AIM_TIME = 10
+MIN_SPEED = 15
+MAX_SPEED = 100
+ACCELERATION = 20
 
 Crosshair = {}
 
@@ -118,7 +119,7 @@ function Crosshair:update(dt, time, bus)
 
   self.timer = self.timer - dt
 
-  self.jiggle = START_JIGGLE + (AIM_TIME - self.timer) / 3
+  self.jiggle = START_JIGGLE + (AIM_TIME - self.timer)
 
   local direction = b.vec2()
 
@@ -150,7 +151,7 @@ function Crosshair:update(dt, time, bus)
 
   local sign = direction:length() > 0 and 1 or -1
 
-  self.speed = b.math.clamp(self.speed + sign * ACCELERATION * dt, 0, MAX_SPEED)
+  self.speed = b.math.clamp(self.speed + sign * ACCELERATION * dt, MIN_SPEED, MAX_SPEED)
 
   self.position = (
     self.position +

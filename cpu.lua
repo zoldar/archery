@@ -1,3 +1,4 @@
+local lm = love.math
 local b = require("lib/batteries")
 
 CPUPlayer = {}
@@ -5,21 +6,28 @@ CPUPlayer = {}
 function CPUPlayer:new()
   local state = {
     targetCenters = {
-      b.vec2(39, 23),
-      b.vec2(16, 17),
-      b.vec2(58, 16)
+      b.vec2(40, 24),
+      b.vec2(17, 18),
+      b.vec2(59, 17)
     },
-    time = 0
+    time = 0,
+    timer = b.timer(nil, nil)
   }
   self.__index = self
   return setmetatable(state, self)
 end
 
 function CPUPlayer:update(dt, game, crosshair)
+  self.timer:update(dt)
   self.time = self.time + dt
 
   if game[game.turn].type == "cpu" and crosshair.target then
-    self:_aimAndShoot(game, crosshair)
+    if self.timer:expired() then
+      -- more human-like reflexes emulated by a delay
+      self.timer = b.timer(lm.random(50, 150) / 1000, nil, function()
+        self:_aimAndShoot(game, crosshair)
+      end)
+    end
   else
     crosshair:release("left")
     crosshair:release("right")
